@@ -2,9 +2,9 @@
 import time, sqlite3, random, numpy, matplotlib.pyplot as plt
 
 db_path = '/Users/zachjanicki/Developer/Poellabauer/mobile_computing_research/data.sqlite'
-growths = 10
-tests = 10
-query_dict = {  1 : 'SELECT * FROM Data_Collection WHERE Device_ID = 700000000000 AND Time_Stamp > 0 AND Time_Stamp < 43300',
+growths = 20
+tests = 10000
+query_dict = {  1 : 'SELECT * FROM Data_Collection WHERE Device_ID = 700000000000 AND Time_Stamp > 0 AND Time_Stamp < 43300 ORDER BY Device_ID DESC',
                 2 : 'SELECT * FROM Data_Collection WHERE Device_ID = 800000000000 AND Sensor_ID = 400000000000',
                 3 : 'SELECT * FROM Data_Collection WHERE Device_ID = 400000000000 AND Sensor_ID = 700000000000 AND Value > 5000000000000000000',
                 4 : 'SELECT * FROM Data_Collection WHERE Device_ID = 300000000000 AND Sensor_ID = 900000000000 AND Time_Stamp > 43300',
@@ -44,7 +44,7 @@ def query():
     # get averages, and standard deviation        
     std_dev_list = []
     average_list = []
-    for i in range(len(query_dict) * tests):
+    for i in range(len(query_dict) * growths):
         std_dev_list.append(numpy.std(all_times[i]))
         average_list.append(numpy.mean(all_times[i]))
     print std_dev_list
@@ -63,7 +63,7 @@ def grow_db():
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     with conn:
-        for i in range(10000):
+        for i in range(100):
             row_data = []
             row_id = i
             dev_id = random.randint(0, 10)
@@ -101,17 +101,17 @@ def graph(average_list, std_dev_list):
         if i == 5:
             continue
         plt.figure(i)
-        x_axis_points = [x for x in range(1, tests+1)]
-        y_axis_points = average_list[i:i+(tests)]
+        x_axis_points = [x for x in range(1, growths+1)]
+        y_axis_points = average_list[i*growths:i*growths+growths]
+        print len(x_axis_points), len(y_axis_points)
         plt.plot(x_axis_points, y_axis_points, 'ro')
         # get list of points with std_dev added
-        std_dev_points = [average_list[j] + std_dev_list[j] for j in range(tests*i, tests*i + tests)]
-        print std_dev_points
-        print y_axis_points
-        plt.plot(x_axis_points, std_dev_points, 'b-')
+        std_dev_points = [average_list[j] + std_dev_list[j] for j in range(growths*i, growths*i + growths)]
+        plt.plot(x_axis_points, std_dev_points, 'bo')
+        std_dev_points = []
         # get list of points with std_dev subtracted
-        std_dev_points = [average_list[j] - std_dev_list[j] for j in range(tests*i, tests*i + tests)]
-        plt.plot(x_axis_points, std_dev_points, 'b-')
+        std_dev_points = [average_list[j] - std_dev_list[j] for j in range(growths*i, growths*i + growths)]
+        plt.plot(x_axis_points, std_dev_points, 'bo')
         y_axis_points = []
         x_axis_points = []
         std_dev_points = []
