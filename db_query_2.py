@@ -2,8 +2,8 @@
 import time, sqlite3, random, numpy, matplotlib.pyplot as plt
 
 db_path = '/Users/zachjanicki/Developer/Poellabauer/mobile_computing_research/data.sqlite'
-growths = 20
-tests = 10000
+growths = 10
+tests = 100
 query_dict = {  1 : 'SELECT * FROM Data_Collection WHERE Device_ID = 700000000000 AND Time_Stamp > 0 AND Time_Stamp < 43300 ORDER BY Device_ID DESC',
                 2 : 'SELECT * FROM Data_Collection WHERE Device_ID = 800000000000 AND Sensor_ID = 400000000000',
                 3 : 'SELECT * FROM Data_Collection WHERE Device_ID = 400000000000 AND Sensor_ID = 700000000000 AND Value > 5000000000000000000',
@@ -63,7 +63,7 @@ def grow_db():
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     with conn:
-        for i in range(100):
+        for i in range(1000000):
             row_data = []
             row_id = i
             dev_id = random.randint(0, 10)
@@ -120,3 +120,9 @@ def main():
     destroy_db()
     x, y = query()
     graph(x, y)
+    
+    
+    
+''' TODO:
+    Ratio = query speed (all strings) / qspeed (original) or other way around
+    Look for inflection in ratio graph
